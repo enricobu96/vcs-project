@@ -20,35 +20,39 @@ class Train:
         WEBCAM INITIALIZATION
         Initialize webcam and draw landmarks and lines
         """
-        cap = cv2.VideoCapture(0)
+        
 
         """
         CAPTURE LANDMARKS INITIALIZATION
-        Initialize number of coordinates and coords.csv file
+        Initialize number of coordinates and coords.csv file (if file doesn't exist)
         """
-        with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-          while cap.isOpened():
-            _, frame = cap.read()
+        if not os.path.isfile('coords.csv'):
+            print('coords.csv does not exist, creating it...')
+            cap = cv2.VideoCapture(0)
+            with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+                while cap.isOpened():
+                    _, frame = cap.read()
 
-            # Recolor Feed. We need this bc mp works with RGB but we have BGR
-            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    # Recolor Feed. We need this bc mp works with RGB but we have BGR
+                    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # Make Detections (find keypoints). Results are on: results.face_landmarks, pose_landmarks, left_hand_landmarks and right_hand_landmarks
-            image.flags.writeable = False
-            results = holistic.process(image)
-            image.flags.writeable = True
-            break
-          cap.release()
+                    # Make Detections (find keypoints). Results are on: results.face_landmarks, pose_landmarks, left_hand_landmarks and right_hand_landmarks
+                    image.flags.writeable = False
+                    results = holistic.process(image)
+                    image.flags.writeable = True
+                    break
+                cap.release()
 
-        num_coords = len(results.pose_landmarks.landmark)+len(results.face_landmarks.landmark)
-        landmarks = ['class']
-        for val in range(1, num_coords+1):
-            landmarks += ['x{}'.format(val), 'y{}'.format(val), 'z{}'.format(val), 'v{}'.format(val)]
+            num_coords = len(results.pose_landmarks.landmark) + len(results.face_landmarks.landmark)
+            landmarks = ['class']
+            for val in range(1, num_coords+1):
+                landmarks += ['x{}'.format(val), 'y{}'.format(val),
+                              'z{}'.format(val), 'v{}'.format(val)]
 
-        with open('coords.csv', mode='w', newline='') as f:
-            csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow(landmarks)
-
+            with open('coords.csv', mode='w', newline='') as f:
+                csv_writer = csv.writer(
+                    f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow(landmarks)
 
         """
         COUNTDOWN
@@ -118,7 +122,7 @@ class Train:
 
                 face = results.face_landmarks.landmark
                 face_row = list(np.array([[landmark.x, landmark.y, landmark.z,
-                                    landmark.visibility] for landmark in face]).flatten())
+                                           landmark.visibility] for landmark in face]).flatten())
 
                 row = pose_row+face_row
                 row.insert(0, gesture)
