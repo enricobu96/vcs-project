@@ -21,9 +21,8 @@ def main(args):
   #       google.cMonDoSomething(res)
   #     else:
   #       kinect.standBy()
-  """
-  Mediapipe initialization
-  """
+
+  # MEDIAPIPE INITIALIZATION
   mp_drawing = mp.solutions.drawing_utils
   # We use mediapipe holistic in order to recognize every body component we need
   mp_holistic = mp.solutions.holistic
@@ -32,55 +31,26 @@ def main(args):
   Initialize webcam and draw landmarks and lines
   """
   cap = cv2.VideoCapture(0)  # Connect to webcam
-  webcam = Webcam(cap)
+  webcam = Webcam(mp_drawing, mp_holistic)
 
   # Mediapipe holistic initialization
   with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
       while cap.isOpened():
-          ret, frame = cap.read()
+          _, frame = cap.read()
 
           # Recolor Feed. We need this bc mp works with RGB but we have BGR
           image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-          image.flags.writeable = False
 
           # Make Detections (find keypoints). Results are on: results.face_landmarks, pose_landmarks, left_hand_landmarks and right_hand_landmarks
+          image.flags.writeable = False
           results = holistic.process(image)
-
           image.flags.writeable = True
+
           # Back to BGR (from RGB) bc opencv wants BGR
           image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-          # Draw face landmarks. 468 landmarks
-          mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS,
-                                    mp_drawing.DrawingSpec(
-                                        color=(80, 110, 10), thickness=1, circle_radius=1),
-                                    mp_drawing.DrawingSpec(
-                                        color=(80, 256, 121), thickness=1, circle_radius=1)
-                                    )
-
-          # Draw right hand landmarks
-          mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-                                    mp_drawing.DrawingSpec(
-                                        color=(80, 22, 10), thickness=2, circle_radius=4),
-                                    mp_drawing.DrawingSpec(
-                                        color=(80, 44, 121), thickness=2, circle_radius=2)
-                                    )
-
-          # Draw left hand landmarks
-          mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-                                    mp_drawing.DrawingSpec(
-                                        color=(121, 22, 76), thickness=2, circle_radius=4),
-                                    mp_drawing.DrawingSpec(
-                                        color=(121, 44, 250), thickness=2, circle_radius=2)
-                                    )
-
-          # Draw pose landmarks. 33 landmarks
-          mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
-                                    mp_drawing.DrawingSpec(
-                                        color=(245, 117, 66), thickness=2, circle_radius=4),
-                                    mp_drawing.DrawingSpec(
-                                        color=(245, 66, 230), thickness=2, circle_radius=2)
-                                    )
+          webcam.draw_landmarks(image, results)
+          webcam.capture_landmarks(results)
 
           cv2.imshow('Raw Webcam Feed', image)
 
