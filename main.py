@@ -6,36 +6,42 @@ __license__ = "GPLv3"
 import argparse
 from enum import Enum
 
-import mediapipe as mp
-import cv2
-from model.train import Train
+from model.acquire_data import AcquireData
 from model.run import Run
+from model.train import Train
 
-class ClassToTrain(Enum):
+class ClassToAcquire(Enum):
       greet = 1
-      sad = 2
+      dab = 2
+      tpose = 3
 
 def main(args):
       
-  if args.subcommand == 'train':
-        if hasattr(ClassToTrain, args.gesture):
-              t = Train()
-              t.train(args.gesture)
-        else:
-              print('Wrong class')
-              exit
-  elif args.subcommand == 'run':
-        r = Run()
-        r.run()
+      if args.subcommand == 'acquire':
+            if hasattr(ClassToAcquire, args.gesture):
+                  a = AcquireData()
+                  a.acquire_data(args.gesture)
+            else:
+                  print('Wrong class')
+                  exit
+      
+      elif args.subcommand == 'train':
+            t = Train()
+            t.train()
+
+      elif args.subcommand == 'run':
+            r = Run()
+            r.run()
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
-  subparsers = parser.add_subparsers(dest='subcommand')
-  parser_train = subparsers.add_parser('train')
-  parser_train.add_argument('gesture', help='The gesture to train')
-  parser_run = subparsers.add_parser('run')
-  args = parser.parse_args()
-  main(args)
+      parser = argparse.ArgumentParser()
+      subparsers = parser.add_subparsers(dest='subcommand')
+      parser_acquire = subparsers.add_parser('acquire')
+      parser_acquire.add_argument('gesture', help='The gesture to acquire')
+      parser_run = subparsers.add_parser('run')
+      parser_train = subparsers.add_parser('train')
+      args = parser.parse_args()
+      main(args)
 
   # kinect.turnOn()
   # while true:

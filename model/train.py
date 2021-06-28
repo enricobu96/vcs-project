@@ -2,141 +2,68 @@ import mediapipe as mp
 import cv2
 import csv
 import os
+import sys
 import numpy as np
-from time import time, sleep
-
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+# 4 diversi modelli di classificazione
+# TODO fare un confronto di questi in termini di precision and recall
+from sklearn.linear_model import LogisticRegression, RidgeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.metrics import accuracy_score
+import pickle
 
 class Train:
-
-    def train(self, gesture: str):
+    def train(self):
         """
-        MEDIAPIPE INITIALIZATION
-        We use mediapipe holistic in order to recognize every body component we need
+        READ CSV AND PREPARE
+        Read the csv and prepare the model to predict
         """
-        mp_drawing = mp.solutions.drawing_utils
-        mp_holistic = mp.solutions.holistic
-
-        """
-        WEBCAM INITIALIZATION
-        Initialize webcam and draw landmarks and lines
-        """
-        
-
-        """
-        CAPTURE LANDMARKS INITIALIZATION
-        Initialize number of coordinates and coords.csv file (if file doesn't exist)
-        """
-        if not os.path.isfile('coords.csv'):
-            print('coords.csv does not exist, creating it...')
-            cap = cv2.VideoCapture(0)
-            with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-                while cap.isOpened():
-                    _, frame = cap.read()
-
-                    # Recolor Feed. We need this bc mp works with RGB but we have BGR
-                    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-                    # Make Detections (find keypoints). Results are on: results.face_landmarks, pose_landmarks, left_hand_landmarks and right_hand_landmarks
-                    image.flags.writeable = False
-                    results = holistic.process(image)
-                    image.flags.writeable = True
-                    break
-                cap.release()
-
-            num_coords = len(results.pose_landmarks.landmark) + len(results.face_landmarks.landmark)
-            landmarks = ['class']
-            for val in range(1, num_coords+1):
-                landmarks += ['x{}'.format(val), 'y{}'.format(val),
-                              'z{}'.format(val), 'v{}'.format(val)]
-
-            with open('coords.csv', mode='w', newline='') as f:
-                csv_writer = csv.writer(
-                    f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                csv_writer.writerow(landmarks)
+        print('Loading dataset...', end='')
+        sys.stdout.flush()
+        df = pd.read_csv('coords.csv')
+        X = df.drop('class', axis=1) # features
+        y = df['class'] # target
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1234)
+        print('DONE')
+        sys.stdout.flush()
 
         """
-        COUNTDOWN
-        Wait two seconds to get in pose
+        TRAIN THE ML MODEL
+        Train the ML model, evaluate and serialize
         """
-        print('Ready'), sleep(1), print('Set'), sleep(1), print('Go')
+        print('Training the model...')
+        sys.stdout.flush()
+        pipelines = {
+            'lr':make_pipeline(StandardScaler(), LogisticRegression()),
+            'rc':make_pipeline(StandardScaler(), RidgeClassifier()),
+            'rf':make_pipeline(StandardScaler(), RandomForestClassifier()),
+            'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
+        }
+        fit_models = {}
+        for alg, pipeline in pipelines.items():
+            print("Training", alg, "...", end='')
+            sys.stdout.flush()
+            model = pipeline.fit(X_train, y_train)
+            fit_models[alg] = model
+            print('DONE')
+            sys.stdout.flush()
 
-        """
-        CAPTURING PHASE
-        Show webcam with landmarks and save landmarks is coords.csv with class 'gesture'
-        """
-        countdown = time()
-        cap = cv2.VideoCapture(0)
-        with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-          while cap.isOpened():
-            _, frame = cap.read()
+        print('Training the model...DONE')
+        sys.stdout.flush()
 
-            # Recolor Feed. We need this bc mp works with RGB but we have BGR
-            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # Test the model
+        self.test_accuracy(fit_models, X_test, y_test)
 
-            # Make Detections (find keypoints). Results are on: results.face_landmarks, pose_landmarks, left_hand_landmarks and right_hand_landmarks
-            image.flags.writeable = False
-            results = holistic.process(image)
-            image.flags.writeable = True
+        # Serialize model
+        with open('prediction_model.pkl', 'wb') as f:
+            pickle.dump(fit_models['rf'], f)
 
-            # Back to BGR (from RGB) bc opencv wants BGR
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-            # DRAW LANDMARKS
-
-            # Draw face landmarks. 468 landmarks
-            mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 110, 10), thickness=1, circle_radius=1),
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 256, 121), thickness=1, circle_radius=1)
-                                      )
-
-            # Draw right hand landmarks
-            mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 22, 10), thickness=2, circle_radius=4),
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 44, 121), thickness=2, circle_radius=2)
-                                      )
-
-            # Draw left hand landmarks
-            mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(
-                                          color=(121, 22, 76), thickness=2, circle_radius=4),
-                                      mp_drawing.DrawingSpec(
-                                          color=(121, 44, 250), thickness=2, circle_radius=2)
-                                      )
-
-            # Draw pose landmarks. 33 landmarks
-            mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(
-                                          color=(245, 117, 66), thickness=2, circle_radius=4),
-                                      mp_drawing.DrawingSpec(
-                                          color=(245, 66, 230), thickness=2, circle_radius=2)
-                                      )
-
-            try:
-                pose = results.pose_landmarks.landmark
-                pose_row = list(np.array([[landmark.x, landmark.y, landmark.z,
-                                landmark.visibility] for landmark in pose]).flatten())
-
-                face = results.face_landmarks.landmark
-                face_row = list(np.array([[landmark.x, landmark.y, landmark.z,
-                                           landmark.visibility] for landmark in face]).flatten())
-
-                row = pose_row+face_row
-                row.insert(0, gesture)
-
-                with open('coords.csv', mode='a', newline='') as f:
-                    csv_writer = csv.writer(
-                        f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                    csv_writer.writerow(row)
-            except:
-                pass
-
-            cv2.imshow('Raw Webcam Feed', image)
-
-            if (cv2.waitKey(10) & 0xFF == ord('q')) or time()-countdown >= 5:
-              break
-        cap.release()
-        cv2.destroyAllWindows()
+    def test_accuracy(self, fit_models, X_test, y_test):
+        print('ACCURACY')
+        sys.stdout.flush()
+        for alg, model in fit_models.items():
+            _y = model.predict(X_test)
+            print(alg, accuracy_score(y_test, _y))
