@@ -38,11 +38,11 @@ class AcquireData:
                 cap.release()
             # num_coords = len(results.pose_landmarks.landmark) + len(results.face_landmarks.landmark)
             # face_landmarks+left_hand+right_hand+pose_landmarks
-            num_coords = 468 + 21 + 21 + 33
+            num_coords = 21 + 33
             landmarks = ['class']
             for val in range(1, num_coords+1):
                 landmarks += ['x{}'.format(val), 'y{}'.format(val),
-                              'z{}'.format(val), 'v{}'.format(val)]
+                              'z{}'.format(val)]
 
             with open('coords.csv', mode='w', newline='') as f:
                 csv_writer = csv.writer(
@@ -78,13 +78,13 @@ class AcquireData:
 
             # DRAW LANDMARKS
 
-            # Draw face landmarks. 468 landmarks
-            mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 110, 10), thickness=1, circle_radius=1),
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 256, 121), thickness=1, circle_radius=1)
-                                      )
+            # # Draw face landmarks. 468 landmarks
+            # mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS,
+            #                           mp_drawing.DrawingSpec(
+            #                               color=(80, 110, 10), thickness=1, circle_radius=1),
+            #                           mp_drawing.DrawingSpec(
+            #                               color=(80, 256, 121), thickness=1, circle_radius=1)
+            #                           )
 
             # Draw right hand landmarks
             mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
@@ -112,31 +112,22 @@ class AcquireData:
 
             try:
                 pose = results.pose_landmarks.landmark
-                pose_row = list(np.array([[landmark.x, landmark.y, landmark.z,
-                                landmark.visibility] for landmark in pose]).flatten())
-
-                face = results.face_landmarks.landmark
-                face_row = list(np.array([[landmark.x, landmark.y, landmark.z,
-                                           landmark.visibility] for landmark in face]).flatten())
+                pose_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in pose]).flatten())           
 
                 r_hand = results.right_hand_landmarks.landmark
-                r_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z,
-                                           landmark.visibility] for landmark in r_hand]).flatten())
+                r_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in r_hand]).flatten())
 
-                l_hand = results.left_hand_landmarks.landmark
-                l_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z,
-                                           landmark.visibility] for landmark in l_hand]).flatten())
-
-                row = pose_row+face_row+r_hand_row+l_hand_row
+                row = pose_row + r_hand_row
                 row.insert(0, gesture)
 
                 with open('coords.csv', mode='a', newline='') as f:
-                    print('doingit')
                     csv_writer = csv.writer(
                         f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     csv_writer.writerow(row)
-            except:
+            except Exception as e: # work on python 3.x
+                print('Failed to upload to ftp: '+ str(e))
                 pass
+
 
             cv2.imshow('Raw Webcam Feed', image)
 

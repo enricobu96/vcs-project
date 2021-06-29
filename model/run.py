@@ -23,7 +23,7 @@ class Run:
         """
         IMPORT MODEL
         """
-        with open('dataset/prediction_model.pkl', 'rb') as f:
+        with open('prediction_model.pkl', 'rb') as f:
             model = pickle.load(f)
 
         """
@@ -60,13 +60,13 @@ class Run:
 
             # DRAW LANDMARKS
 
-            # Draw face landmarks. 468 landmarks
-            mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 110, 10), thickness=1, circle_radius=1),
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 256, 121), thickness=1, circle_radius=1)
-                                      )
+            # # Draw face landmarks. 468 landmarks
+            # mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS,
+            #                           mp_drawing.DrawingSpec(
+            #                               color=(80, 110, 10), thickness=1, circle_radius=1),
+            #                           mp_drawing.DrawingSpec(
+            #                               color=(80, 256, 121), thickness=1, circle_radius=1)
+            #                           )
 
             # Draw right hand landmarks
             mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
@@ -76,13 +76,13 @@ class Run:
                                           color=(80, 44, 121), thickness=2, circle_radius=2)
                                       )
 
-            # Draw left hand landmarks
-            mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(
-                                          color=(121, 22, 76), thickness=2, circle_radius=4),
-                                      mp_drawing.DrawingSpec(
-                                          color=(121, 44, 250), thickness=2, circle_radius=2)
-                                      )
+            # # Draw left hand landmarks
+            # mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
+            #                           mp_drawing.DrawingSpec(
+            #                               color=(121, 22, 76), thickness=2, circle_radius=4),
+            #                           mp_drawing.DrawingSpec(
+            #                               color=(121, 44, 250), thickness=2, circle_radius=2)
+            #                           )
 
             # Draw pose landmarks. 33 landmarks
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
@@ -94,12 +94,12 @@ class Run:
 
             try:
                 pose = results.pose_landmarks.landmark
-                pose_row = list(np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility] for landmark in pose]).flatten())
+                pose_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in pose]).flatten())           
+
+                r_hand = results.right_hand_landmarks.landmark
+                r_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in r_hand]).flatten())
                 
-                face = results.face_landmarks.landmark
-                face_row = list(np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility] for landmark in face]).flatten())
-                
-                row = pose_row+face_row
+                row = pose_row+r_hand_row
 
                 # Make Detections
                 X = pd.DataFrame([row])

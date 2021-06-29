@@ -11,11 +11,9 @@ from model.run import Run
 from model.train import Train
 
 class ClassToAcquire(Enum):
-      onlyface = 1
-      nothing = 2
-      greet = 3
-      dab = 4
-      tpose = 5
+      greet = 1
+      dab = 2
+      tpose = 3
 
 
 def main(args):
