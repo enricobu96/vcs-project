@@ -14,6 +14,8 @@ from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score
 import pickle
+from primesense import openni2
+from primesense import _openni2 as c_api
 
 
 class Run:
@@ -37,7 +39,8 @@ class Run:
         WEBCAM INITIALIZATION
         Initialize webcam and draw landmarks and lines
         """
-        cap = cv2.VideoCapture(0)
+        device = cv2.CAP_OPENNI2
+        cap = cv2.VideoCapture(device)
 
         """
         CAPTURING PHASE
@@ -45,7 +48,7 @@ class Run:
         """
         with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
           while cap.isOpened():
-            _, frame = cap.read()
+            ret, frame = cap.read()
 
             # Recolor Feed. We need this bc mp works with RGB but we have BGR
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
