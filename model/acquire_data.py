@@ -36,8 +36,9 @@ class AcquireData:
                     image.flags.writeable = True
                     break
                 cap.release()
-
-            num_coords = len(results.pose_landmarks.landmark) + len(results.face_landmarks.landmark)
+            # num_coords = len(results.pose_landmarks.landmark) + len(results.face_landmarks.landmark)
+            # face_landmarks+left_hand+right_hand+pose_landmarks
+            num_coords = 468 + 21 + 21 + 33
             landmarks = ['class']
             for val in range(1, num_coords+1):
                 landmarks += ['x{}'.format(val), 'y{}'.format(val),
@@ -118,10 +119,19 @@ class AcquireData:
                 face_row = list(np.array([[landmark.x, landmark.y, landmark.z,
                                            landmark.visibility] for landmark in face]).flatten())
 
-                row = pose_row+face_row
+                r_hand = results.right_hand_landmarks.landmark
+                r_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z,
+                                           landmark.visibility] for landmark in r_hand]).flatten())
+
+                l_hand = results.left_hand_landmarks.landmark
+                l_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z,
+                                           landmark.visibility] for landmark in l_hand]).flatten())
+
+                row = pose_row+face_row+r_hand_row+l_hand_row
                 row.insert(0, gesture)
 
                 with open('coords.csv', mode='a', newline='') as f:
+                    print('doingit')
                     csv_writer = csv.writer(
                         f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     csv_writer.writerow(row)

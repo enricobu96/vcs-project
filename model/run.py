@@ -23,7 +23,7 @@ class Run:
         """
         IMPORT MODEL
         """
-        with open('prediction_model.pkl', 'rb') as f:
+        with open('dataset/prediction_model.pkl', 'rb') as f:
             model = pickle.load(f)
 
         """

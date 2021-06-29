@@ -23,7 +23,7 @@ class Train:
         """
         print('Loading dataset...', end='')
         sys.stdout.flush()
-        df = pd.read_csv('coords.csv')
+        df = pd.read_csv('dataset/coords.csv')
         X = df.drop('class', axis=1) # features
         y = df['class'] # target
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1234)
@@ -58,7 +58,7 @@ class Train:
         self.test_accuracy(fit_models, X_test, y_test)
 
         # Serialize model
-        with open('prediction_model.pkl', 'wb') as f:
+        with open('dataset/prediction_model.pkl', 'wb') as f:
             pickle.dump(fit_models['rf'], f)
 
     def test_accuracy(self, fit_models, X_test, y_test):
