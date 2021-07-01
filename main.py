@@ -15,6 +15,7 @@ class ClassToAcquire(Enum):
       dab = 2
       tpose = 3
 
+
 def main(args):
       
       if args.subcommand == 'acquire':
