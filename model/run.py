@@ -17,7 +17,6 @@ import pickle
 from primesense import openni2
 from primesense import _openni2 as c_api
 
-
 class Run:
 
     def run(self):
@@ -39,8 +38,7 @@ class Run:
         WEBCAM INITIALIZATION
         Initialize webcam and draw landmarks and lines
         """
-        device = cv2.CAP_OPENNI2
-        cap = cv2.VideoCapture(device)
+        cap = cv2.VideoCapture(0)
 
         """
         CAPTURING PHASE
@@ -48,10 +46,15 @@ class Run:
         """
         with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
           while cap.isOpened():
-            ret, frame = cap.read()
+            #ret, frame = cap.read()
+            image = cap.retrieve(cv2.CAP_OPENNI_BGR_IMAGE)
+            # depImg = cap.retrieve(cv2.CAP_OPENNI_DEPTH_MAP)
+            # mskImg = cap.retrieve(cv2.CAP_OPENNI_VALID_DEPTH_MASK)
+            #print(dep)
+            #print(frame.shape)
 
             # Recolor Feed. We need this bc mp works with RGB but we have BGR
-            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            #image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             # Make Detections (find keypoints). Results are on: results.face_landmarks, pose_landmarks, left_hand_landmarks and right_hand_landmarks
             image.flags.writeable = False
@@ -71,13 +74,13 @@ class Run:
             #                               color=(80, 256, 121), thickness=1, circle_radius=1)
             #                           )
 
-            # Draw right hand landmarks
-            mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 22, 10), thickness=2, circle_radius=4),
-                                      mp_drawing.DrawingSpec(
-                                          color=(80, 44, 121), thickness=2, circle_radius=2)
-                                      )
+            # # Draw right hand landmarks
+            # mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
+            #                           mp_drawing.DrawingSpec(
+            #                               color=(80, 22, 10), thickness=2, circle_radius=4),
+            #                           mp_drawing.DrawingSpec(
+            #                               color=(80, 44, 121), thickness=2, circle_radius=2)
+            #                           )
 
             # # Draw left hand landmarks
             # mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
@@ -97,12 +100,18 @@ class Run:
 
             try:
                 pose = results.pose_landmarks.landmark
-                pose_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in pose]).flatten())           
+                pose_row = list(np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility] for landmark in pose], ).flatten())      
 
-                r_hand = results.right_hand_landmarks.landmark
-                r_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in r_hand]).flatten())
+                # face = results.face_landmarks.landmark
+                # face_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in face]).flatten())     
+
+                # r_hand = results.right_hand_landmarks.landmark
+                # r_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in r_hand]).flatten())
+
+                # l_hand = results.left_hand_landmarks.landmark
+                # l_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in l_hand]).flatten())
                 
-                row = pose_row+r_hand_row
+                row = pose_row #  + face_row + r_hand_row + l_hand_row
 
                 # Make Detections
                 X = pd.DataFrame([row])

@@ -9,12 +9,12 @@ from enum import Enum
 from model.acquire_data import AcquireData
 from model.run import Run
 from model.train import Train
+from time import sleep
 
 class ClassToAcquire(Enum):
       greet = 1
       dab = 2
       tpose = 3
-
 
 def main(args):
       
@@ -30,6 +30,17 @@ def main(args):
             t = Train()
             t.train()
 
+      elif args.subcommand == 'aseqtrain':
+            for i in ["greet","greet","dab","dab","tpose","tpose"]:
+                  print("NOW DO: ", i)
+                  sleep(2)
+                  a = AcquireData()
+                  a.acquire_data(i)
+                  
+            print("now im training yea boiiiiii")
+            t = Train()
+            t.train()      
+
       elif args.subcommand == 'run':
             r = Run()
             r.run()
@@ -38,6 +49,7 @@ if __name__ == "__main__":
       parser = argparse.ArgumentParser()
       subparsers = parser.add_subparsers(dest='subcommand')
       parser_acquire = subparsers.add_parser('acquire')
+      parser_acquire2 = subparsers.add_parser('aseqtrain')
       parser_acquire.add_argument('gesture', help='The gesture to acquire')
       parser_run = subparsers.add_parser('run')
       parser_train = subparsers.add_parser('train')
