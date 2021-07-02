@@ -3,6 +3,7 @@ pandas>=1.2.5
 scikit-learn>=0.24.2
 mediapipe>=0.8.5
 numpy~=1.19.2
+openni>=2.3.0
 primesense>=2.2.0
 google-assistant-grpc==0.2.1
 google-auth-oauthlib>=0.1.0,<0.3
