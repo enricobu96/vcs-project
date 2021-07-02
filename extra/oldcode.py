@@ -55,3 +55,10 @@
                 # l_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in l_hand]).flatten())
                 
                 #row = pose_row + face_row + r_hand_row + l_hand_row
+
+
+# IMAGE FILTERING KINECT
+                #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                # image = np.concatenate((image, image, image), axis=0)
+                # image = np.swapaxes(image, 0, 2)
+                # image = np.swapaxes(image, 0, 1)
