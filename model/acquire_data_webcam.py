@@ -4,6 +4,7 @@ import csv
 import os
 import numpy as np
 from time import perf_counter_ns, time, sleep
+from classes.kinect import Kinect
 
 
 class AcquireData:
