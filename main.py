@@ -5,11 +5,13 @@ __license__ = "GPLv3"
 
 import argparse
 from enum import Enum
+from operator import sub
 
-from model.acquire_data_webcam import AcquireData
-from model.acquire_data_dataset import AcquireDataset
-from model.run import Run
-from model.train import Train
+from model.mediapipe.acquire_data_webcam import AcquireData
+from model.mediapipe.acquire_data_dataset import AcquireDataset
+from model.mediapipe.run import Run
+from model.mediapipe.train import Train
+from model.kinect_depth.kinect_skeleton import KinectSkeleton
 from time import sleep
 
 class ClassToAcquire(Enum):
@@ -28,7 +30,7 @@ def main(args):
                   print('Wrong class')
                   exit
       
-      if args.subcommand == 'acquire-dataset':
+      elif args.subcommand == 'acquire-dataset':
             a = AcquireDataset()
             a.acquire_data()
       
@@ -51,6 +53,10 @@ def main(args):
             r = Run()
             r.run()
 
+      elif args.subcommand == 'kinect-skeleton':
+            ks = KinectSkeleton()
+            ks.run()
+
 if __name__ == "__main__":
       parser = argparse.ArgumentParser()
       subparsers = parser.add_subparsers(dest='subcommand')
@@ -60,15 +66,6 @@ if __name__ == "__main__":
       parser_acquire.add_argument('gesture', help='The gesture to acquire')
       parser_run = subparsers.add_parser('run')
       parser_train = subparsers.add_parser('train')
+      kinect = subparsers.add_parser('kinect-skeleton')
       args = parser.parse_args()
       main(args)
-
-  # kinect.turnOn()
-  # while true:
-  #   canIStart = waitToSomethingHappen()
-  #   if canIStart:
-  #     res = recognize()
-  #     if res not finish:
-  #       google.cMonDoSomething(res)
-  #     else:
-  #       kinect.standBy()

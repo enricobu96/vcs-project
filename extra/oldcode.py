@@ -62,3 +62,14 @@
                 # image = np.concatenate((image, image, image), axis=0)
                 # image = np.swapaxes(image, 0, 2)
                 # image = np.swapaxes(image, 0, 1)
+
+# DEPTH CAMERA KINECT
+                # """
+                # DEPTH CAMERA
+                # Retrieve depth camera frame and do image filtering on that
+                # """
+                # frame_dep = depth_camera.read_frame()
+                # frame_dep_data = frame_dep.get_buffer_as_uint16()
+                # image_dep = np.frombuffer(frame_dep_data, dtype=np.uint8)
+                # image_dep.shape = (480,640,2)
+                # firstChannel, secondChannel = cv2.split(image_dep)
