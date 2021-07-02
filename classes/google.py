@@ -1,13 +1,38 @@
 """
+ 
  GoogleAPI class
+ 
  ---------------
  This class take as constructor the token to invoke google apis using this sequence:
     1. We get the text we want to send to google
     2. We send the text with the token which is necessary to identify the user permissions on other smart devices
     3. Google API response is then ri-elaborate in a custom way so that the response is sent to the user using a display
+
+ ---------------
+
+    Part of this code as been taken and edited in order to execute a single command.
+
+    Copyright (C) 2017 Google Inc.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    MODIFICATIONS
+    - Source: https://github.com/googlesamples/assistant-sdk-python/tree/master/google-assistant-sdk/googlesamples/assistant/grpc#run-the-samples
+
+    The original code allows to execute an entire conversation using terminal or a display. 
+    The edited code allows to execute a single request using the terminal.
+
+ ---------------
 """
 
-
+import argparse
+import sys
 import os
 import logging
 import json
@@ -39,8 +64,7 @@ class GoogleAPI:
 
 
     def _invokeAssistant(self, text_query):
-        """Send a text request to the Assistant and playback the response.
-        """
+
         def iter_assist_requests():
             config = embedded_assistant_pb2.AssistConfig(
                 audio_out_config=embedded_assistant_pb2.AudioOutConfig(
@@ -107,6 +131,7 @@ class GoogleAPI:
         response_text = self._invokeAssistant(text_query=message)
         if response_text:
             logging.info('<@assistant> %s', response_text)
+        grpc_channel.close()
         return response_text
 
     def _elaborateResponse(self, response: any) -> bool:
@@ -118,9 +143,12 @@ class GoogleAPI:
         return newRes
 
 
-def main():
+def main(args):
     gapi = GoogleAPI()
-    gapi.execute("turn on albero")
+    gapi.execute(sys.argv[1])
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("<message>", help="Message to send to Google Assistant")
+    args = parser.parse_args()
+    main(args)
