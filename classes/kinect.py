@@ -70,3 +70,24 @@ def draw_skeleton(img, ut, user, col):
                        (nite2.JointType.NITE_JOINT_RIGHT_FOOT, nite2.JointType.NITE_JOINT_RIGHT_KNEE),
                        (nite2.JointType.NITE_JOINT_RIGHT_KNEE, nite2.JointType.NITE_JOINT_RIGHT_HIP)]:
         draw_limb(img, ut, user.skeleton.joints[idx1], user.skeleton.joints[idx2], col)
+
+def get_keypoints(user):
+    keypoints = []
+    for idx in [nite2.JointType.NITE_JOINT_HEAD,
+                nite2.JointType.NITE_JOINT_NECK,
+                nite2.JointType.NITE_JOINT_LEFT_SHOULDER,
+                nite2.JointType.NITE_JOINT_RIGHT_SHOULDER,
+                nite2.JointType.NITE_JOINT_LEFT_ELBOW,
+                nite2.JointType.NITE_JOINT_RIGHT_ELBOW,
+                nite2.JointType.NITE_JOINT_LEFT_HAND,
+                nite2.JointType.NITE_JOINT_RIGHT_HAND,
+                nite2.JointType.NITE_JOINT_TORSO,
+                nite2.JointType.NITE_JOINT_LEFT_HIP,
+                nite2.JointType.NITE_JOINT_RIGHT_HIP,
+                nite2.JointType.NITE_JOINT_LEFT_KNEE,
+                nite2.JointType.NITE_JOINT_RIGHT_KNEE,
+                nite2.JointType.NITE_JOINT_LEFT_FOOT,
+                nite2.JointType.NITE_JOINT_RIGHT_FOOT]:
+        keypoints.append([user.skeleton.joints[idx].position.x, user.skeleton.joints[idx].position.y, user.skeleton.joints[idx].position.z])
+    
+    return keypoints

@@ -11,7 +11,7 @@ from model.mediapipe.acquire_data_webcam import AcquireData
 from model.mediapipe.acquire_data_dataset import AcquireDataset
 from model.mediapipe.run import Run
 from model.mediapipe.train import Train
-from model.kinect_depth.kinect_skeleton import KinectSkeleton
+from model.kinect_depth.acquire_kinect import AcquireKinect
 from time import sleep
 
 class ClassToAcquire(Enum):
@@ -53,9 +53,14 @@ def main(args):
             r = Run()
             r.run()
 
-      elif args.subcommand == 'kinect-skeleton':
-            ks = KinectSkeleton()
-            ks.run()
+      elif args.subcommand == 'acquire-kinect':
+            if hasattr(ClassToAcquire, args.gesture):
+                  ks = AcquireKinect()
+                  ks.acquire_kinect(args.gesture)
+            else:
+                  print('Wrong class')
+                  exit
+            
 
 if __name__ == "__main__":
       parser = argparse.ArgumentParser()
@@ -66,6 +71,7 @@ if __name__ == "__main__":
       parser_acquire.add_argument('gesture', help='The gesture to acquire')
       parser_run = subparsers.add_parser('run')
       parser_train = subparsers.add_parser('train')
-      kinect = subparsers.add_parser('kinect-skeleton')
+      parser_kinect = subparsers.add_parser('acquire-kinect')
+      parser_kinect.add_argument('gesture', help='The gesture to acquire')
       args = parser.parse_args()
       main(args)
