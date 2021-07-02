@@ -4,6 +4,7 @@ import csv
 import os
 import sys
 import numpy as np
+import openni
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
@@ -14,8 +15,6 @@ from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score
 import pickle
-from primesense import openni2
-from primesense import _openni2 as c_api
 
 class Run:
 
@@ -24,7 +23,7 @@ class Run:
         """
         IMPORT MODEL
         """
-        with open('prediction_model.pkl', 'rb') as f:
+        with open('./model/prediction_models/prediction_model.pkl', 'rb') as f:
             model = pickle.load(f)
 
         """
@@ -46,49 +45,19 @@ class Run:
         """
         with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
           while cap.isOpened():
-            #ret, frame = cap.read()
-            image = cap.retrieve(cv2.CAP_OPENNI_BGR_IMAGE)
-            # depImg = cap.retrieve(cv2.CAP_OPENNI_DEPTH_MAP)
-            # mskImg = cap.retrieve(cv2.CAP_OPENNI_VALID_DEPTH_MASK)
-            #print(dep)
-            #print(frame.shape)
+            ret, frame = cap.read()
 
             # Recolor Feed. We need this bc mp works with RGB but we have BGR
-            #image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            resized_image = cv2.resize(image, (640,480), interpolation=cv2.INTER_AREA)
 
             # Make Detections (find keypoints). Results are on: results.face_landmarks, pose_landmarks, left_hand_landmarks and right_hand_landmarks
-            image.flags.writeable = False
-            results = holistic.process(image)
-            image.flags.writeable = True
+            resized_image.flags.writeable = False
+            results = holistic.process(resized_image)
+            resized_image.flags.writeable = True
 
             # Back to BGR (from RGB) bc opencv wants BGR
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-            # DRAW LANDMARKS
-
-            # # Draw face landmarks. 468 landmarks
-            # mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS,
-            #                           mp_drawing.DrawingSpec(
-            #                               color=(80, 110, 10), thickness=1, circle_radius=1),
-            #                           mp_drawing.DrawingSpec(
-            #                               color=(80, 256, 121), thickness=1, circle_radius=1)
-            #                           )
-
-            # # Draw right hand landmarks
-            # mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-            #                           mp_drawing.DrawingSpec(
-            #                               color=(80, 22, 10), thickness=2, circle_radius=4),
-            #                           mp_drawing.DrawingSpec(
-            #                               color=(80, 44, 121), thickness=2, circle_radius=2)
-            #                           )
-
-            # # Draw left hand landmarks
-            # mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-            #                           mp_drawing.DrawingSpec(
-            #                               color=(121, 22, 76), thickness=2, circle_radius=4),
-            #                           mp_drawing.DrawingSpec(
-            #                               color=(121, 44, 250), thickness=2, circle_radius=2)
-            #                           )
 
             # Draw pose landmarks. 33 landmarks
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
@@ -101,17 +70,8 @@ class Run:
             try:
                 pose = results.pose_landmarks.landmark
                 pose_row = list(np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility] for landmark in pose], ).flatten())      
-
-                # face = results.face_landmarks.landmark
-                # face_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in face]).flatten())     
-
-                # r_hand = results.right_hand_landmarks.landmark
-                # r_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in r_hand]).flatten())
-
-                # l_hand = results.left_hand_landmarks.landmark
-                # l_hand_row = list(np.array([[landmark.x, landmark.y, landmark.z] for landmark in l_hand]).flatten())
                 
-                row = pose_row #  + face_row + r_hand_row + l_hand_row
+                row = pose_row
 
                 # Make Detections
                 X = pd.DataFrame([row])

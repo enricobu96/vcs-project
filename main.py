@@ -6,7 +6,8 @@ __license__ = "GPLv3"
 import argparse
 from enum import Enum
 
-from model.acquire_data import AcquireData
+from model.acquire_data_webcam import AcquireData
+from model.acquire_data_dataset import AcquireDataset
 from model.run import Run
 from model.train import Train
 from time import sleep
@@ -15,6 +16,7 @@ class ClassToAcquire(Enum):
       greet = 1
       dab = 2
       tpose = 3
+      jazzhands = 4
 
 def main(args):
       
@@ -25,6 +27,10 @@ def main(args):
             else:
                   print('Wrong class')
                   exit
+      
+      if args.subcommand == 'acquire-dataset':
+            a = AcquireDataset()
+            a.acquire_data()
       
       elif args.subcommand == 'train':
             t = Train()
@@ -50,6 +56,7 @@ if __name__ == "__main__":
       subparsers = parser.add_subparsers(dest='subcommand')
       parser_acquire = subparsers.add_parser('acquire')
       parser_acquire2 = subparsers.add_parser('aseqtrain')
+      parser_acquire3 = subparsers.add_parser('acquire-dataset')
       parser_acquire.add_argument('gesture', help='The gesture to acquire')
       parser_run = subparsers.add_parser('run')
       parser_train = subparsers.add_parser('train')
