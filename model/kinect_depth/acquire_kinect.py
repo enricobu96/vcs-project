@@ -43,7 +43,7 @@ class AcquireKinect:
         COUNTDOWN
         Wait two seconds to get in pose
         """
-        print('Ready'), sleep(0.25), print('Set'), sleep(0.25), print('Go')
+        print('Ready'), sleep(1), print('Set'), sleep(1), print('Go')
 
         """
         USER TRACKER INITIALIZATION
@@ -62,6 +62,7 @@ class AcquireKinect:
         CAPTURING PHASE
         Capture image, do image filtering, apply NiTE2
         """
+        countdown = time()
         while True:
             # Get frame
             ut_frame = user_tracker.read_frame()
@@ -94,7 +95,7 @@ class AcquireKinect:
                             csv_writer.writerow(row)
 
             cv2.imshow("Depth", cv2.resize(img, (win_w, win_h)))
-            if (cv2.waitKey(1) & 0xFF == ord('q')):
+            if (cv2.waitKey(1) & 0xFF == ord('q')) or time()-countdown >= 10:
                 break
         k.close_camera()
         cv2.destroyAllWindows()
