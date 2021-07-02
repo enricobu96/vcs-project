@@ -12,6 +12,7 @@ from model.mediapipe.acquire_data_dataset import AcquireDataset
 from model.mediapipe.run import Run
 from model.mediapipe.train import Train
 from model.kinect_depth.acquire_kinect import AcquireKinect
+from model.kinect_depth.run_kinect import RunKinect
 from time import sleep
 
 class ClassToAcquire(Enum):
@@ -20,9 +21,13 @@ class ClassToAcquire(Enum):
       tpose = 3
       jazzhands = 4
 
+class TrainRunModes(Enum):
+      mediapipe = 1
+      nite = 2
+
 def main(args):
-      
-      if args.subcommand == 'acquire':
+
+      if args.subcommand == 'acquire-mediapipe':
             if hasattr(ClassToAcquire, args.gesture):
                   a = AcquireData()
                   a.acquire_data(args.gesture)
@@ -33,10 +38,6 @@ def main(args):
       elif args.subcommand == 'acquire-dataset':
             a = AcquireDataset()
             a.acquire_data()
-      
-      elif args.subcommand == 'train':
-            t = Train()
-            t.train()
 
       elif args.subcommand == 'aseqtrain':
             for i in ["greet","greet","dab","dab","tpose","tpose"]:
@@ -44,15 +45,9 @@ def main(args):
                   sleep(2)
                   a = AcquireData()
                   a.acquire_data(i)
-                  
-            print("now im training yea boiiiiii")
             t = Train()
-            t.train()      
-
-      elif args.subcommand == 'run':
-            r = Run()
-            r.run()
-
+            t.train()     
+      
       elif args.subcommand == 'acquire-kinect':
             if hasattr(ClassToAcquire, args.gesture):
                   ks = AcquireKinect()
@@ -60,18 +55,42 @@ def main(args):
             else:
                   print('Wrong class')
                   exit
+
+      elif args.subcommand == 'train':
+            if hasattr(TrainRunModes, args.mode):
+                  t = Train()
+                  t.train(args.mode == 'nite')
+            else:
+                  print('You came to the wrong neighborood')
+
+      elif args.subcommand == 'run':
+            if args.mode == 'mediapipe':
+                  r = Run()
+                  r.run()
+            elif args.mode == 'nite':
+                  r = RunKinect()
+                  r.run()
+            else:
+                  print('You came to the wrong neighborood')
             
 
 if __name__ == "__main__":
       parser = argparse.ArgumentParser()
       subparsers = parser.add_subparsers(dest='subcommand')
-      parser_acquire = subparsers.add_parser('acquire')
-      parser_acquire2 = subparsers.add_parser('aseqtrain')
-      parser_acquire3 = subparsers.add_parser('acquire-dataset')
-      parser_acquire.add_argument('gesture', help='The gesture to acquire')
-      parser_run = subparsers.add_parser('run')
+
+      parser_acquire_mp = subparsers.add_parser('acquire-mediapipe')
+      parser_acquire_ds = subparsers.add_parser('acquire-dataset')
+      parser_acquire_kn = subparsers.add_parser('acquire-kinect')
+      parser_acquire_seq = subparsers.add_parser('aseqtrain')
+      parser_acquire_mp.add_argument('gesture', help='The gesture to acquire')
+      parser_acquire_kn.add_argument('gesture', help='The gesture to acquire')
+
       parser_train = subparsers.add_parser('train')
-      parser_kinect = subparsers.add_parser('acquire-kinect')
-      parser_kinect.add_argument('gesture', help='The gesture to acquire')
+      parser_train.add_argument('mode', help='Mode to train [mediapipe/nite]')
+
+      parser_run = subparsers.add_parser('run')
+      parser_run.add_argument('mode', help='Running mode [mediapipe/nite]')
+      
+      
       args = parser.parse_args()
       main(args)

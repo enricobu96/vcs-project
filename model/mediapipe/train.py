@@ -16,14 +16,18 @@ from sklearn.metrics import accuracy_score
 import pickle
 
 class Train:
-    def train(self):
+    
+    def train(self, is_nite: bool):
         """
         READ CSV AND PREPARE
         Read the csv and prepare the model to predict
         """
         print('Loading dataset...', end='')
         sys.stdout.flush()
-        df = pd.read_csv('./dataset/keypoints/coords.csv')
+        if not is_nite:
+            df = pd.read_csv('./dataset/keypoints/coords.csv')
+        else:
+            df = pd.read_csv('./dataset/keypoints/coords_kinect.csv')
         X = df.drop('class', axis=1) # features
         y = df['class'] # target
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1234)

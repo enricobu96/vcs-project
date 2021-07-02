@@ -1,0 +1,2 @@
+class RunKinect:
+    print('prova')
