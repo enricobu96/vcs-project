@@ -142,3 +142,4 @@ cython_debug/
 
 # Dataset file
 *.csv
+.vscode/settings.json
