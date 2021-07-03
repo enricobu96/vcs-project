@@ -58,16 +58,21 @@ class Train:
         print('Training the model...DONE')
         sys.stdout.flush()
 
-        # Test the model
+        # Test the models
         self.test_accuracy(fit_models, X_test, y_test)
 
-        # Serialize model
+        # Serialize models
         if not is_nite:
-            with open('./model/mediapipe/prediction_models/prediction_model.pkl', 'wb') as f:
-                pickle.dump(fit_models['rf'], f)
+            for k in pipelines.keys():
+                fileName = ('./model/mediapipe/prediction_models/prediction_model_' + k + '.pkl')
+                with open(fileName, 'wb') as f:
+                    pickle.dump(fit_models[k], f)
         else:
-            with open('./model/kinect_depth/prediction_models/prediction_model.pkl', 'wb') as f:
-                pickle.dump(fit_models['rf'], f)
+            for k in pipelines.keys():
+                fileName = ('./model/kinect_depth/prediction_models/prediction_model_' + k + '.pkl')
+                with open(fileName, 'wb') as f:
+                    pickle.dump(fit_models[k], f)
+
 
     def test_accuracy(self, fit_models, X_test, y_test):
         print('ACCURACY')

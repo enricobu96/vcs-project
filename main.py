@@ -25,6 +25,12 @@ class TrainRunModes(Enum):
       mediapipe = 1
       nite = 2
 
+class Classifications(Enum):
+      lr = 1
+      rc = 2
+      rf = 3
+      gb = 4
+
 def main(args):
 
       if args.subcommand == 'acquire-mediapipe':
@@ -64,12 +70,12 @@ def main(args):
                   print('You came to the wrong neighborood')
 
       elif args.subcommand == 'run':
-            if args.mode == 'mediapipe':
+            if args.mode == 'mediapipe' and hasattr(Classifications, args.classification):
                   r = Run()
-                  r.run()
-            elif args.mode == 'nite':
+                  r.run(args.classification)
+            elif args.mode == 'nite' and hasattr(Classifications, args.classification):
                   r = RunKinect()
-                  r.run()
+                  r.run(args.classification)
             else:
                   print('You came to the wrong neighborood')
             
@@ -90,7 +96,7 @@ if __name__ == "__main__":
 
       parser_run = subparsers.add_parser('run')
       parser_run.add_argument('mode', help='Running mode [mediapipe/nite]')
-      
+      parser_run.add_argument('classification', help='Classification algorithm to use')  
       
       args = parser.parse_args()
       main(args)

@@ -15,7 +15,7 @@ from time import time
 
 class Run:
 
-    def run(self):
+    def run(self, classificationModel: str):
         """
         IMPORT MODEL
         Import model from binary dump

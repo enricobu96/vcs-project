@@ -8,7 +8,7 @@ import pandas as pd
 
 class RunKinect:
     
-    def run(self):
+    def run(self, classificationModel: str):
         
         """
         IMPORT MODEL
