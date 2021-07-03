@@ -14,7 +14,8 @@ class RunKinect:
         IMPORT MODEL
         Import model from binary dump
         """
-        with open('./model/kinect_depth/prediction_models/prediction_model.pkl', 'rb') as f:
+        fileName = ('./model/kinect_depth/prediction_models/prediction_model_' + classificationModel + '.pkl')
+        with open(fileName, 'rb') as f:
             model = pickle.load(f)
 
         """

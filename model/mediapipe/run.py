@@ -20,7 +20,8 @@ class Run:
         IMPORT MODEL
         Import model from binary dump
         """
-        with open('./model/mediapipe/prediction_models/prediction_model.pkl', 'rb') as f:
+        fileName = ('./model/mediapipe/prediction_models/prediction_model_' + classificationModel + '.pkl')
+        with open(fileName, 'rb') as f:
             model = pickle.load(f)
 
         """
