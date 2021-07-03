@@ -3,12 +3,6 @@ import cv2
 import numpy as np
 from numpy.lib.type_check import imag
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression, RidgeClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.metrics import accuracy_score
 import pickle
 from classes.kinect import Kinect
 from time import time

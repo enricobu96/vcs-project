@@ -12,6 +12,8 @@ from sklearn.preprocessing import StandardScaler
 # TODO fare un confronto di questi in termini di precision and recall
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 import pickle
 
@@ -45,6 +47,8 @@ class Train:
             'rc':make_pipeline(StandardScaler(), RidgeClassifier()),
             'rf':make_pipeline(StandardScaler(), RandomForestClassifier()),
             'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
+            'svm': make_pipeline(StandardScaler(), SVC()),
+            'cnn': make_pipeline(StandardScaler(), MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5,2), random_state=1))
         }
         fit_models = {}
         for alg, pipeline in pipelines.items():

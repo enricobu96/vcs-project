@@ -10,7 +10,7 @@ from operator import sub
 from model.mediapipe.acquire_data_webcam import AcquireData
 from model.mediapipe.acquire_data_dataset import AcquireDataset
 from model.mediapipe.run import Run
-from model.mediapipe.train import Train
+from model.train import Train
 from model.kinect_depth.acquire_kinect import AcquireKinect
 from model.kinect_depth.run_kinect import RunKinect
 from time import sleep
@@ -30,6 +30,8 @@ class Classifications(Enum):
       rc = 2
       rf = 3
       gb = 4
+      svm = 5
+      cnn = 6
 
 def main(args):
 
