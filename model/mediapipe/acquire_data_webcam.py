@@ -101,7 +101,7 @@ class AcquireData:
 
             cv2.imshow('Raw Webcam Feed', image)
 
-            if (cv2.waitKey(10) & 0xFF == ord('q')) or time()-countdown >= 5:
+            if (cv2.waitKey(10) & 0xFF == ord('q')) or time()-countdown >= 10:
               break
         cv2.destroyAllWindows()
         k.close_camera()
