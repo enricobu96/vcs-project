@@ -71,20 +71,58 @@ class RunKinect:
                         draw_skeleton(img, user_tracker, user, (255, 0, 0))
                         pose_row = list(np.array(get_keypoints(user)).flatten())
                         row = pose_row
-
                         X = pd.DataFrame([row])
-                        # Do predictions
-                        gesture_class = model.predict(X)[0]
-                        body_language_prob = model.predict_proba(X)[0]
-                        print(gesture_class, body_language_prob)
 
-                        # Display Probability
-                        cv2.putText(img, 'PROB'
-                                , (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
-                        cv2.putText(img, str(round(body_language_prob[np.argmax(body_language_prob)],2))
-                                , (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                        # Do predictions
+                        if classificationModel == 'lr':
+                            gesture_class, gesture_prob = self.__use_lr(model, X, img)
+                        elif classificationModel == 'rc':
+                            gesture_class, gesture_prob = self.__use_rc(model, X, img)
+                        elif classificationModel == 'rf':
+                            gesture_class, gesture_prob = self.__use_rf(model, X, img)
+                        elif classificationModel == 'gb':
+                            gesture_class, gesture_prob = self.__use_gb(model, X, img)
+                        elif classificationModel == 'svm':
+                            gesture_class, gesture_prob = self.__use_svm(model, X, img)
+                        elif classificationModel == 'cnn':
+                            gesture_class, gesture_prob = self.__use_cnn(model, X, img)
+
+                        cv2.putText(img, 'CLASS', (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                        cv2.putText(img, gesture_class.split(' ')[0], (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                        cv2.putText(img, 'PROB', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                        cv2.putText(img, str(round(gesture_prob[np.argmax(gesture_prob)],2)), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+
+                        print(gesture_class, gesture_prob)
+
+                        
             cv2.imshow("Depth", cv2.resize(img, (win_w, win_h)))
             if (cv2.waitKey(1) & 0xFF == ord('q')):
                 break
         k.close_camera()
         cv2.destroyAllWindows()
+
+    def __use_lr(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
+
+    def __use_rc(self, model, X, img):
+        gesture_class = model.predict(X)[0]
+        d = model.decision_function(X)[0]
+        gesture_prob = np.exp(d)/np.sum(np.exp(d))
+        return gesture_class, gesture_prob
+
+    def __use_rf(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
+
+    def __use_gb(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
+
+    def __use_svm(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
+
+    def __use_cnn(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob

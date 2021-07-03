@@ -21,7 +21,7 @@ class AcquireData:
         CAPTURE LANDMARKS INITIALIZATION
         Initialize number of coordinates and coords.csv file (if file doesn't exist)
         """
-        if not os.path.isfile('./dataset/keypoints/coords.csv'):
+        if not os.path.isfile('./dataset/keypoints/coords_mediapipe.csv'):
             print('coords.csv does not exist, creating it...')
             num_coords = 33 
             landmarks = ['class']
@@ -29,7 +29,7 @@ class AcquireData:
                 landmarks += ['x{}'.format(val), 'y{}'.format(val),
                                 'z{}'.format(val), 'v{}'.format(val)]
 
-            with open('./dataset/keypoints/coords.csv', mode='w', newline='') as f:
+            with open('./dataset/keypoints/coords_mediapipe.csv', mode='w', newline='') as f:
                 csv_writer = csv.writer(
                     f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow(landmarks)
@@ -91,7 +91,7 @@ class AcquireData:
                 row.insert(0, gesture)
                 
                 # Save found keypoints on coords.csv
-                with open('./dataset/keypoints/coords.csv', mode='a', newline='') as f:
+                with open('./dataset/keypoints/coords_mediapipe.csv', mode='a', newline='') as f:
                     csv_writer = csv.writer(
                         f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     csv_writer.writerow(row)

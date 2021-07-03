@@ -9,7 +9,7 @@ from operator import sub
 
 from model.mediapipe.acquire_data_webcam import AcquireData
 from model.mediapipe.acquire_data_dataset import AcquireDataset
-from model.mediapipe.run import Run
+from model.mediapipe.run_mediapipe import Run
 from model.train import Train
 from model.kinect_depth.acquire_kinect import AcquireKinect
 from model.kinect_depth.run_kinect import RunKinect

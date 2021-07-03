@@ -1,11 +1,9 @@
 import mediapipe as mp
 import cv2
 import numpy as np
-from numpy.lib.type_check import imag
 import pandas as pd
 import pickle
 from classes.kinect import Kinect
-from time import time
 
 class Run:
 
@@ -75,37 +73,25 @@ class Run:
                     X = pd.DataFrame([row])
 
                     # Do predictions
-                    gesture_class = model.predict(X)[0]
-                    body_language_prob = model.predict_proba(X)[0]
+                    if classificationModel == 'lr':
+                        gesture_class, gesture_prob = self.__use_lr(model, X, image)
+                    elif classificationModel == 'rc':
+                        gesture_class, gesture_prob = self.__use_rc(model, X, image)
+                    elif classificationModel == 'rf':
+                        gesture_class, gesture_prob = self.__use_rf(model, X, image)
+                    elif classificationModel == 'gb':
+                        gesture_class, gesture_prob = self.__use_gb(model, X, image)
+                    elif classificationModel == 'svm':
+                        gesture_class, gesture_prob = self.__use_svm(model, X, image)
+                    elif classificationModel == 'cnn':
+                        gesture_class, gesture_prob = self.__use_cnn(model, X, image)
 
-                    # Get ear coordinates (to center the writings)
-                    coords = tuple(np.multiply(
-                                np.array(
-                                    (results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_EAR].x, 
-                                    results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_EAR].y))
-                            , [640,480]).astype(int))
-                
-                    cv2.rectangle(image, 
-                            (coords[0], coords[1]+5), 
-                            (coords[0]+len(gesture_class)*20, coords[1]-30), 
-                            (245, 117, 16), -1)
-                    cv2.putText(image, gesture_class, coords, 
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                
-                    # Get status box
-                    cv2.rectangle(image, (0,0), (250, 60), (245, 117, 16), -1)
+                    cv2.putText(image, 'CLASS', (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                    cv2.putText(image, gesture_class.split(' ')[0], (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                    cv2.putText(image, 'PROB', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                    cv2.putText(image, str(round(gesture_prob[np.argmax(gesture_prob)],2)), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
-                    # Display Class
-                    cv2.putText(image, 'CLASS'
-                                , (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
-                    cv2.putText(image, gesture_class.split(' ')[0]
-                            , (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                
-                    # Display Probability
-                    cv2.putText(image, 'PROB'
-                                , (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
-                    cv2.putText(image, str(round(body_language_prob[np.argmax(body_language_prob)],2))
-                                , (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                    print(gesture_class, gesture_prob)
                 
                 except:
                     pass
@@ -115,3 +101,29 @@ class Run:
                     break
         cv2.destroyAllWindows()
         k.close_camera()
+
+    def __use_lr(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
+
+    def __use_rc(self, model, X, img):
+        gesture_class = model.predict(X)[0]
+        d = model.decision_function(X)[0]
+        gesture_prob = np.exp(d)/np.sum(np.exp(d))
+        return gesture_class, gesture_prob
+
+    def __use_rf(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
+
+    def __use_gb(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
+
+    def __use_svm(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
+
+    def __use_cnn(self, model, X, img):
+        gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
+        return gesture_class, gesture_prob
