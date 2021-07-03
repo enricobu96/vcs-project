@@ -12,6 +12,7 @@
 NAME = 0 # Gesture name
 PREC = 1 # Precision
 
+import google
 from collections import defaultdict
 
 class GestureAssistant:
