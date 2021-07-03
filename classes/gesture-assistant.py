@@ -25,7 +25,7 @@ class GestureAssistant:
 
     def addToBufferAndCheck(self, g_name: str, g_prec: float):
         #print(len(self.frame_buffer))
-        if(len(self.frame_buffer) == 90):
+        if(len(self.frame_buffer) == 60):
             # print("its 90")
             self.frame_buffer.pop(0)
         checker = self.checkBuffer()
@@ -58,6 +58,9 @@ class GestureAssistant:
         if(len(d) > 0):
             #print(c)
             gesture = max(c.items())
+            alternative = max(p.items())
+            if gesture[0] != alternative[0] and gesture[1] == c[alternative[0]]:
+                gesture = alternative
             #print(gesture)
             if(gesture[1] >= self.min_repetitions and p[gesture[NAME]] >= self.min_precision):
                 print("Found", gesture[NAME])
