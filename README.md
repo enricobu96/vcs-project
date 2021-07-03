@@ -7,7 +7,7 @@ Install all the dependencies using `pip install -r requirements.txt`
 
 ## Usage
 
-`python3 main.py [action] {option}`
+`python3 main.py [action] {option1} {option2}`
 
 ### Acquire
 
@@ -24,6 +24,12 @@ Install all the dependencies using `pip install -r requirements.txt`
 
 ### Run
 
-- `run {mode}`: run program in one of two `modes`:
+- `run {mode} {classification}`: run program in one of two `modes`:
     -   `mediapipe`
     -   `nite`
+
+    #### With different `classification` algorithm:
+    - `lr`: Logistic Regression
+    - `rc`: Ridge
+    - `rf`: Random Forest
+    - `gb`: Gradient Boosting

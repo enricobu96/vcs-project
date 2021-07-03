@@ -1,17 +1,12 @@
-import mediapipe as mp
-import cv2
-import csv
-import os
 import sys
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-# 4 diversi modelli di classificazione
-# TODO fare un confronto di questi in termini di precision and recall
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 import pickle
 
@@ -25,7 +20,7 @@ class Train:
         print('Loading dataset...', end='')
         sys.stdout.flush()
         if not is_nite:
-            df = pd.read_csv('./dataset/keypoints/coords.csv')
+            df = pd.read_csv('./dataset/keypoints/coords_mediapipe.csv')
         else:
             df = pd.read_csv('./dataset/keypoints/coords_kinect.csv')
         X = df.drop('class', axis=1) # features
@@ -45,6 +40,8 @@ class Train:
             'rc':make_pipeline(StandardScaler(), RidgeClassifier()),
             'rf':make_pipeline(StandardScaler(), RandomForestClassifier()),
             'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
+            'svm': make_pipeline(StandardScaler(), SVC(probability=True)),
+            'cnn': make_pipeline(StandardScaler(), MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5,2), random_state=1))
         }
         fit_models = {}
         for alg, pipeline in pipelines.items():
@@ -58,16 +55,20 @@ class Train:
         print('Training the model...DONE')
         sys.stdout.flush()
 
-        # Test the model
+        # Test the models
         self.test_accuracy(fit_models, X_test, y_test)
 
-        # Serialize model
+        # Serialize models
         if not is_nite:
-            with open('./model/mediapipe/prediction_models/prediction_model.pkl', 'wb') as f:
-                pickle.dump(fit_models['rf'], f)
+            for k in pipelines.keys():
+                fileName = ('./model/mediapipe/prediction_models/prediction_model_' + k + '.pkl')
+                with open(fileName, 'wb') as f:
+                    pickle.dump(fit_models[k], f)
         else:
-            with open('./model/kinect_depth/prediction_models/prediction_model.pkl', 'wb') as f:
-                pickle.dump(fit_models['rf'], f)
+            for k in pipelines.keys():
+                fileName = ('./model/kinect_depth/prediction_models/prediction_model_' + k + '.pkl')
+                with open(fileName, 'wb') as f:
+                    pickle.dump(fit_models[k], f)
 
     def test_accuracy(self, fit_models, X_test, y_test):
         print('ACCURACY')

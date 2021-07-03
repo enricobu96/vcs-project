@@ -9,8 +9,8 @@ from operator import sub
 
 from model.mediapipe.acquire_data_webcam import AcquireData
 from model.mediapipe.acquire_data_dataset import AcquireDataset
-from model.mediapipe.run import Run
-from model.mediapipe.train import Train
+from model.mediapipe.run_mediapipe import Run
+from model.train import Train
 from model.kinect_depth.acquire_kinect import AcquireKinect
 from model.kinect_depth.run_kinect import RunKinect
 from time import sleep
@@ -24,6 +24,14 @@ class ClassToAcquire(Enum):
 class TrainRunModes(Enum):
       mediapipe = 1
       nite = 2
+
+class Classifications(Enum):
+      lr = 1
+      rc = 2
+      rf = 3
+      gb = 4
+      svm = 5
+      cnn = 6
 
 def main(args):
 
@@ -64,12 +72,12 @@ def main(args):
                   print('You came to the wrong neighborood')
 
       elif args.subcommand == 'run':
-            if args.mode == 'mediapipe':
+            if args.mode == 'mediapipe' and hasattr(Classifications, args.classification):
                   r = Run()
-                  r.run()
-            elif args.mode == 'nite':
+                  r.run(args.classification)
+            elif args.mode == 'nite' and hasattr(Classifications, args.classification):
                   r = RunKinect()
-                  r.run()
+                  r.run(args.classification)
             else:
                   print('You came to the wrong neighborood')
             
@@ -90,7 +98,7 @@ if __name__ == "__main__":
 
       parser_run = subparsers.add_parser('run')
       parser_run.add_argument('mode', help='Running mode [mediapipe/nite]')
-      
+      parser_run.add_argument('classification', help='Classification algorithm to use')  
       
       args = parser.parse_args()
       main(args)
