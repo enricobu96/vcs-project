@@ -73,3 +73,45 @@
                 # image_dep = np.frombuffer(frame_dep_data, dtype=np.uint8)
                 # image_dep.shape = (480,640,2)
                 # firstChannel, secondChannel = cv2.split(image_dep)
+
+
+# TRY TO SAVE SOME FRAMES
+        # save_for_later = []
+        # frame_count = 0
+        # i = 0
+        # # SAVE DATA FOR LATER
+        #     if frame_count == 0:
+        #         if image is not None:
+        #             save_for_later.append(image)
+        #             frame_count += 1
+        #             i += 1
+        #     elif frame_count == 15:
+        #         frame_count = 0
+        #     else:
+        #         frame_count += 1
+        # for image in save_for_later:
+        #        try:
+        #        print(image)
+        #        sleep(1)
+        #        image_flip, dark_image, bright_image, resized_image = self.__data_augmentation(image)
+        #        ifresults = holistic.process(image_flip)
+        #        diresults = holistic.process(dark_image)
+        #        biresults = holistic.process(bright_image)
+        #        riresults = holistic.process(resized_image)
+        #        row_pose_if = ifresults.pose_landmarks.landmark
+        #        row_pose_di = diresults.pose_landmarks.landmark
+        #        row_pose_bi = biresults.pose_landmarks.landmark
+        #        row_pose_ri = riresults.pose_landmarks.landmark
+        #        row_pose_if.insert(0, gesture)
+        #        row_pose_di.insert(0, gesture)
+        #        row_pose_bi.insert(0, gesture)
+        #        row_pose_ri.insert(0, gesture)
+        #        with open('./dataset/keypoints/coords_mediapipe.csv', mode='a', newline='') as f:
+        #            csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        #            csv_writer.writerow(row_pose_if)
+        #            csv_writer.writerow(row_pose_di)
+        #            csv_writer.writerow(row_pose_bi)
+        #            csv_writer.writerow(row_pose_ri)
+        #    except Exception as e:
+        #        print('Error in post processing (do not worry: ' + str(e))
+        #        pass
