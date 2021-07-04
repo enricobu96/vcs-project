@@ -45,6 +45,7 @@ class AcquireKinect:
         """
         print('Ready'), sleep(1), print('Set'), sleep(1), print('Go')
 
+
         """
         USER TRACKER INITIALIZATION
         Initialize user tracker and NiTE2 service

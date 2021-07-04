@@ -16,10 +16,13 @@ from model.kinect_depth.run_kinect import RunKinect
 from time import sleep
 
 class ClassToAcquire(Enum):
-      greet = 1
-      dab = 2
-      tpose = 3
-      jazzhands = 4
+      dab = 1
+      tpose = 2
+      r_arm_mid = 3
+      r_arm_top = 4
+      l_arm_mid = 5
+      l_arm_top = 6
+      steady = 7
 
 class TrainRunModes(Enum):
       mediapipe = 1
