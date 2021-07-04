@@ -12,27 +12,39 @@
 NAME = 0 # Gesture name
 PREC = 1 # Precision
 
-import google
+from time import sleep
 from collections import defaultdict
+import datetime
 
 class GestureAssistant:
 
-    def __init__(self, max_buffer_frames: int = 60, min_repetitions: int = 20, min_precision: float = 0.75, prefer_repetitions_over_precision: bool = True):
+    def __init__(self, cooldown_seconds: int = 0, max_buffer_frames: int = 60, min_repetitions: int = 20, min_precision: float = 0.75, prefer_repetitions_over_precision: bool = True):
         self.frame_buffer = [] # (gesture_name, double precision)
         self.max_buffer_frames = max_buffer_frames
         self.min_repetitions = min_repetitions
         self.min_precision = min_precision
         self.prefer_repetitions = prefer_repetitions_over_precision
+        self.cooldown_seconds = cooldown_seconds
+        self.__last_cooldown = datetime.datetime.now() - datetime.timedelta(seconds=self.cooldown_seconds)
     
 
     def addToBufferAndCheck(self, g_name: str, g_prec: float):
+        if(self.cooldown_seconds != 0):
+            cooldown = datetime.datetime.now() - datetime.timedelta(seconds=self.cooldown_seconds)
+            # If last cooldown is bigger than X seconds ago, then the cooldown is still ongoing
+            if self.__last_cooldown > cooldown:
+                print("cooling down")
+                return None
+
         if(len(self.frame_buffer) == self.max_buffer_frames):
             self.frame_buffer.pop(0)
         checker = self.checkBuffer()
         if(checker != None): 
             self.frame_buffer = []
+            self.__last_cooldown = datetime.datetime.now()
             print(checker)
         self.frame_buffer.append((g_name, g_prec))
+        return checker
 
     # Longest common subsequence based on adjacent past 5 items
     def checkBuffer(self):
@@ -78,7 +90,7 @@ class GestureAssistant:
 
 
 def main():
-    ga = GestureAssistant(60, 20, 0.75, True)
+    ga = GestureAssistant(0, 60, 20, 0.75, True)
 
     for x in range(260):
         if(x < 30):
@@ -89,6 +101,8 @@ def main():
             ga.addToBufferAndCheck("idle", 0.73)
         elif(x < 260):
             ga.addToBufferAndCheck("tpose", 0.90)
+
+        sleep(0.10)
 
 if __name__ == '__main__':
     main()
