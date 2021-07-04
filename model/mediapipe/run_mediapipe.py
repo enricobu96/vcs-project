@@ -4,6 +4,12 @@ import numpy as np
 import pandas as pd
 import pickle
 from classes.kinect import Kinect
+import signal
+from classes.gesture_assistant import GestureAssistant
+import zmq
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 
 class Run:
 
@@ -37,7 +43,16 @@ class Run:
         Show webcam with landmarks and do real-time predictions
         """
         with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-            
+
+            """
+            GESTURE PUBLISHER
+            Gesture publisher for Google Assistant
+            """
+            context = zmq.Context()
+            socket = context.socket(zmq.PUB)
+            socket.bind('tcp://*:6969')
+            g_ass = GestureAssistant(5, 60, 20, 0.8, True)
+
             while True:
                 """
                 RGB CAMERA
@@ -85,6 +100,10 @@ class Run:
                         gesture_class, gesture_prob = self.__use_svm(model, X, image)
                     elif classificationModel == 'cnn':
                         gesture_class, gesture_prob = self.__use_cnn(model, X, image)
+
+                    if g_ass.addToBufferAndCheck(gesture_class, gesture_prob[np.argmax(gesture_prob)]):
+                        print("sending..")
+                        socket.send(bytes(gesture_class,'utf-8')) #(byte?)
 
                     cv2.putText(image, 'CLASS', (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
                     cv2.putText(image, gesture_class.split(' ')[0], (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
