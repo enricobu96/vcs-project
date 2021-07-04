@@ -5,6 +5,11 @@ import sys
 import cv2
 import numpy as np
 import pandas as pd
+import signal
+from classes.gesture_assistant import GestureAssistant
+import zmq
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 class RunKinect:
     
@@ -45,6 +50,15 @@ class RunKinect:
         (img_w, img_h) = CAPTURE_SIZE_KINECT if use_kinect else CAPTURE_SIZE_OTHERS
         win_w = 640
         win_h = int(img_h * win_w / img_w)
+
+        """
+        GESTURE PUBLISHER
+        Gesture publisher for Google Assistant
+        """
+        context = zmq.Context()
+        socket = context.socket(zmq.PUB)
+        socket.bind('tcp://*:6969')
+        g_ass = GestureAssistant(5, 60, 20, 0.8, True)
 
         while True:
             # Get frame
@@ -91,6 +105,10 @@ class RunKinect:
                         cv2.putText(img, gesture_class.split(' ')[0], (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
                         cv2.putText(img, 'PROB', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
                         cv2.putText(img, str(round(gesture_prob[np.argmax(gesture_prob)],2)), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+
+                        if g_ass.addToBufferAndCheck(gesture_class, gesture_prob[np.argmax(gesture_prob)]):
+                            print("sending..")
+                        socket.send(bytes(gesture_class,'utf-8')) #(byte?)
 
                         print(gesture_class, gesture_prob)
 
