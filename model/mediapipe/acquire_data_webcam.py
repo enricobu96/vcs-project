@@ -57,8 +57,8 @@ class AcquireData:
         INITIALIZE SAVE FOR LATER
         Initialize object to save video for later post-processing
         """
-        fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-        out = cv2.VideoWriter('./model/_vid/temp.mp4', fourcc, 20, (640,480))
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out = cv2.VideoWriter('./model/_vid/temp.avi', fourcc, 20, (640,480))
 
         """
         CAPTURING PHASE
@@ -77,8 +77,6 @@ class AcquireData:
             image = np.frombuffer(frame_data, dtype=np.uint8)
             image.shape = (480,640,3)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-            doaflip, dark, bright, resi = self.__data_augmentation(image)
 
             """
             SAVE FOR LATER
@@ -121,7 +119,7 @@ class AcquireData:
               break
         cv2.destroyAllWindows()
         k.close_camera()
-
+        out.release()
 
         """
         DATA AUGMENTATION
@@ -141,6 +139,7 @@ class AcquireData:
                     ifresults, diresults, biresults, riresults= holistic.process(image_flip), holistic.process(dark_image), holistic.process(bright_image), holistic.process(resized_image)
 
                     try:
+                        # spaghetti alla carbonara
                         if_pose = ifresults.pose_landmarks.landmark
                         di_pose = diresults.pose_landmarks.landmark
                         bi_pose = biresults.pose_landmarks.landmark
@@ -150,6 +149,7 @@ class AcquireData:
                         bi_pose_row = list(np.array([[landmark.x, landmark.y, landmark.z,  landmark.visibility] for landmark in bi_pose]).flatten())          
                         ri_pose_row = list(np.array([[landmark.x, landmark.y, landmark.z,  landmark.visibility] for landmark in ri_pose]).flatten())          
                         
+                        # panna e salmone
                         if_pose_row.insert(0, gesture)
                         di_pose_row.insert(0, gesture)
                         bi_pose_row.insert(0, gesture)
@@ -157,6 +157,7 @@ class AcquireData:
 
                         with open('./dataset/keypoints/coords_mediapipe.csv', mode='a', newline='') as f:
                             csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                            # amatriciana
                             csv_writer.writerow(if_pose_row)
                             csv_writer.writerow(di_pose_row)
                             csv_writer.writerow(bi_pose_row)
@@ -168,7 +169,7 @@ class AcquireData:
                 else:
                     break
         
-        os.remove('./model/_vid/temp.mp4')
+        os.remove('./model/_vid/temp.avi')
         
         print('Processing done, kthxbye')
         sys.stdout.flush()
