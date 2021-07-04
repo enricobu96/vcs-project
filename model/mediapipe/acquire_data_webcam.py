@@ -1,4 +1,3 @@
-from collections import defaultdict
 import mediapipe as mp
 import cv2
 import csv
@@ -115,7 +114,7 @@ class AcquireData:
 
             cv2.imshow('Raw Webcam Feed', image)
 
-            if (cv2.waitKey(10) & 0xFF == ord('q')) or time()-countdown >= 5:
+            if (cv2.waitKey(10) & 0xFF == ord('q')) or time()-countdown >= 10:
               break
         cv2.destroyAllWindows()
         k.close_camera()
@@ -157,7 +156,7 @@ class AcquireData:
 
                         with open('./dataset/keypoints/coords_mediapipe.csv', mode='a', newline='') as f:
                             csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                            # amatriciana
+                            # carbonara ketchup e wurstel
                             csv_writer.writerow(if_pose_row)
                             csv_writer.writerow(di_pose_row)
                             csv_writer.writerow(bi_pose_row)
