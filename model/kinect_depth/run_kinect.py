@@ -98,7 +98,7 @@ class RunKinect:
                             gesture_class, gesture_prob = self.__use_gb(model, X, img)
                         elif classificationModel == 'svm':
                             gesture_class, gesture_prob = self.__use_svm(model, X, img)
-                        elif classificationModel == 'cnn':
+                        elif classificationModel == 'mlp':
                             gesture_class, gesture_prob = self.__use_cnn(model, X, img)
 
                         cv2.putText(img, 'CLASS', (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)

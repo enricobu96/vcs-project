@@ -1,0 +1,80 @@
+lr
+
+              precision    recall  f1-score   support
+
+         dab       1.00      0.98      0.99      1351
+   l_arm_mid       0.84      0.90      0.87      1314
+   l_arm_top       0.97      0.93      0.95      1293
+   r_arm_mid       0.97      0.98      0.97      1385
+   r_arm_top       0.97      0.99      0.98      1315
+      steady       0.89      0.88      0.89      1327
+       tpose       0.99      0.95      0.97      1282
+
+    accuracy                           0.95      9267
+   macro avg       0.95      0.95      0.95      9267
+weighted avg       0.95      0.95      0.95      9267
+
+rc
+
+              precision    recall  f1-score   support
+
+         dab       0.99      0.97      0.98      1351
+   l_arm_mid       0.78      0.92      0.84      1314
+   l_arm_top       0.96      0.93      0.95      1293
+   r_arm_mid       0.96      0.99      0.98      1385
+   r_arm_top       0.97      0.99      0.98      1315
+      steady       0.92      0.79      0.85      1327
+       tpose       0.99      0.95      0.97      1282
+
+    accuracy                           0.94      9267
+   macro avg       0.94      0.94      0.94      9267
+weighted avg       0.94      0.94      0.94      9267
+
+rf
+
+              precision    recall  f1-score   support
+
+         dab       0.97      0.88      0.92      1351
+   l_arm_mid       0.95      0.78      0.86      1314
+   l_arm_top       0.81      0.96      0.88      1293
+   r_arm_mid       0.99      0.94      0.96      1385
+   r_arm_top       0.93      0.99      0.96      1315
+      steady       0.99      1.00      0.99      1327
+       tpose       0.90      0.97      0.94      1282
+
+    accuracy                           0.93      9267
+   macro avg       0.94      0.93      0.93      9267
+weighted avg       0.94      0.93      0.93      9267
+
+svm
+
+              precision    recall  f1-score   support
+
+         dab       0.91      0.78      0.84      1351
+   l_arm_mid       0.72      0.75      0.74      1314
+   l_arm_top       0.96      0.95      0.96      1293
+   r_arm_mid       0.89      0.99      0.94      1385
+   r_arm_top       0.97      0.98      0.98      1315
+      steady       0.84      0.69      0.76      1327
+       tpose       0.68      0.79      0.73      1282
+
+    accuracy                           0.85      9267
+   macro avg       0.85      0.85      0.85      9267
+weighted avg       0.85      0.85      0.85      9267
+
+mlp
+
+              precision    recall  f1-score   support
+
+         dab       0.99      0.98      0.99      1351
+   l_arm_mid       0.95      0.95      0.95      1314
+   l_arm_top       0.97      0.98      0.98      1293
+   r_arm_mid       0.99      0.98      0.99      1385
+   r_arm_top       1.00      1.00      1.00      1315
+      steady       0.94      0.97      0.95      1327
+       tpose       0.98      0.95      0.97      1282
+
+    accuracy                           0.97      9267
+   macro avg       0.97      0.97      0.97      9267
+weighted avg       0.97      0.97      0.97      9267
+

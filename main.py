@@ -34,7 +34,7 @@ class Classifications(Enum):
       rf = 3
       gb = 4
       svm = 5
-      cnn = 6
+      mlp = 6
 
 def main(args):
 
