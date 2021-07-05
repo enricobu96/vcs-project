@@ -72,7 +72,6 @@ class Run:
                 results = holistic.process(image)
                 image.flags.writeable = True
                 
-                # Draw pose landmarks
                 mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
                                       mp_drawing.DrawingSpec(
                                           color=(245, 117, 66), thickness=2, circle_radius=4),
@@ -81,13 +80,19 @@ class Run:
                                       )
 
                 try:
-                    # Get pose keypoints
+                    """
+                    GET POSE KEYPOINTS
+                    Use mediapipe to get pose keypoints for prediction
+                    """
                     pose = results.pose_landmarks.landmark
                     pose_row = list(np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility] for landmark in pose], ).flatten())    
                     row = pose_row
                     X = pd.DataFrame([row])
 
-                    # Do predictions
+                    """
+                    PREDICTIONS
+                    Do predictions
+                    """
                     if classificationModel == 'lr':
                         gesture_class, gesture_prob = self.__use_lr(model, X, image)
                     elif classificationModel == 'rc':
@@ -103,14 +108,16 @@ class Run:
 
                     if g_ass.addToBufferAndCheck(gesture_class, gesture_prob[np.argmax(gesture_prob)]):
                         print("sending..")
-                        socket.send(bytes(gesture_class,'utf-8')) #(byte?)
+                        socket.send(bytes(gesture_class,'utf-8'))
 
+                    """
+                    PRINT RESULTS ON SCREEN
+                    Just...this
+                    """
                     cv2.putText(image, 'CLASS', (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
                     cv2.putText(image, gesture_class.split(' ')[0], (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
                     cv2.putText(image, 'PROB', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
                     cv2.putText(image, str(round(gesture_prob[np.argmax(gesture_prob)],2)), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-
-                    print(gesture_class, gesture_prob)
                 
                 except:
                     pass
@@ -121,6 +128,10 @@ class Run:
         cv2.destroyAllWindows()
         k.close_camera()
 
+    """
+    PREDICTION FUNCTIONS
+    One prediction function for every classification algorithm. Returns class and probability
+    """
     def __use_lr(self, model, X, img):
         gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
         return gesture_class, gesture_prob
