@@ -15,7 +15,6 @@ from sklearn.metrics import precision_recall_fscore_support as score
 import pickle
 from matplotlib import pyplot as plt
 import numpy as np
-# import cmat2scores
 
 class Train:
     
@@ -44,11 +43,11 @@ class Train:
         print('Training the model...')
         sys.stdout.flush()
         pipelines = {
-            'lr':make_pipeline(StandardScaler(), LogisticRegression(C=1e-4, max_iter=150)), # toccare C
-            'rc':make_pipeline(StandardScaler(), RidgeClassifier(alpha=5e4)), #toccare alpha
-            'rf':make_pipeline(StandardScaler(), RandomForestClassifier(n_estimators=100, max_depth=5, min_samples_leaf=10)),
-            'svm': make_pipeline(StandardScaler(), SVC(probability=True, max_iter=200, C=2)),
-            'mlp': make_pipeline(StandardScaler(), MLPClassifier(alpha=4e1, random_state=42, hidden_layer_sizes=(32,)))
+            'lr':make_pipeline(StandardScaler(), LogisticRegression(C=1e-2, max_iter=150)), # toccare C
+            'rc':make_pipeline(StandardScaler(), RidgeClassifier(alpha=1e2)), #toccare alpha
+            'rf':make_pipeline(StandardScaler(), RandomForestClassifier(n_estimators=30, max_depth=3, min_samples_leaf=10)),
+            'svm': make_pipeline(StandardScaler(), SVC(probability=True, max_iter=200, C=1e-1)),
+            'mlp': make_pipeline(StandardScaler(), MLPClassifier(alpha=2e1, random_state=42, hidden_layer_sizes=(32,)))
         }
         fit_models = {}
         for alg, pipeline in pipelines.items():
@@ -105,8 +104,8 @@ class Train:
 
     def print_confusion_matrix(self, alg, model, X_test, y_test):
         fig = plt.figure()
-        xy = ['balc', 'bend', 'boxx', 'clap', 'marc', 'onew', 'wave'] # per APE
-        #xy = ['dab', 'tp', 'rarmm', 'rarmt', 'larmm', 'larmt', 'st'] # per Custom
+        # xy = ['balc', 'bend', 'boxx', 'clap', 'marc', 'onew', 'wave'] # per APE
+        xy = ['dab', 'tp', 'rarmm', 'rarmt', 'larmm', 'larmt', 'st'] # per Custom
         y_predict = model.predict(X_test)
         c_matrix = skm.confusion_matrix(y_test, y_predict)
         disp = plot_confusion_matrix(model, X_test, y_test, display_labels=xy, cmap='plasma')
@@ -115,7 +114,7 @@ class Train:
 
     def print_learning_curves(self, alg, model, X_test, y_test, X_train, y_train):
         fig = plt.figure()
-        train_sizes, train_scores, validation_scores = learning_curve(model, X_train, y_train, train_sizes=np.linspace(0.1,1.0,100), n_jobs=22)
+        train_sizes, train_scores, validation_scores = learning_curve(model, X_train, y_train, train_sizes=np.linspace(0.1,1.0,5), n_jobs=22)
         train_scores_mean = train_scores.mean(axis = 1)
         validation_scores_mean = validation_scores.mean(axis = 1)
         plt.plot(train_sizes, train_scores_mean, train_sizes, validation_scores_mean)
@@ -123,8 +122,3 @@ class Train:
         plt.ylabel('Score')
         plt.legend(['Training score', 'Validation score'])
         plt.savefig('./extra/test_reports/learning_' + alg + '.png')
-
-        
-def shuffler(filename):
-    df = pd.read_csv(filename, header=0,dtype=object,na_filter=False)
-    return df.reindex(np.random.permutation(df.index))
