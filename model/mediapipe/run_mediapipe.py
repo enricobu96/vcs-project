@@ -98,7 +98,7 @@ class Run:
                         gesture_class, gesture_prob = self.__use_gb(model, X, image)
                     elif classificationModel == 'svm':
                         gesture_class, gesture_prob = self.__use_svm(model, X, image)
-                    elif classificationModel == 'cnn':
+                    elif classificationModel == 'mlp':
                         gesture_class, gesture_prob = self.__use_cnn(model, X, image)
 
                     if g_ass.addToBufferAndCheck(gesture_class, gesture_prob[np.argmax(gesture_prob)]):

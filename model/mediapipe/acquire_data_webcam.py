@@ -134,7 +134,7 @@ class AcquireData:
             while cap.isOpened():
                 ret, image = cap.read()
                 if ret == True:
-                    image_flip, dark_image, bright_image, resized_image = self.__data_augmentation(image)
+                    image_flip, dark_image, bright_image, resized_image = self.__data_augmentation(image, gesture)
                     ifresults, diresults, biresults, riresults= holistic.process(image_flip), holistic.process(dark_image), holistic.process(bright_image), holistic.process(resized_image)
 
                     try:
@@ -173,8 +173,11 @@ class AcquireData:
         print('Processing done, kthxbye')
         sys.stdout.flush()
 
-    def __data_augmentation(self, image):
-        flip = cv2.flip(image, 1)
+    def __data_augmentation(self, image, gesture):
+        if gesture in ['l_arm_mid', 'l_arm_top', 'r_arm_mid', 'r_arm_top']:
+            flip = cv2.resize(image, (0,0), fx=uniform(0.9,1), fy=uniform(0.9,1))
+        else:
+            flip = cv2.flip(image, 1)
         dark = cv2.convertScaleAbs(image, alpha=uniform(0.5, 1), beta=0)
         bright = cv2.convertScaleAbs(image, alpha=uniform(1, 1.5))
         resized = cv2.resize(image, (0,0), fx=uniform(0.9,1), fy=uniform(0.9,1))
