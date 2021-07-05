@@ -44,11 +44,11 @@ class Train:
         print('Training the model...')
         sys.stdout.flush()
         pipelines = {
-            'lr':make_pipeline(StandardScaler(), LogisticRegression(C=1e-5, max_iter=150)), # toccare C
-            'rc':make_pipeline(StandardScaler(), RidgeClassifier(alpha=5e5)), #toccare alpha
-            'rf':make_pipeline(StandardScaler(), RandomForestClassifier(n_estimators=100, max_depth=1, min_samples_leaf=10)),
-            'svm': make_pipeline(StandardScaler(), SVC(probability=True, C=5e-2, max_iter=200, kernel='sigmoid')),
-            'mlp': make_pipeline(StandardScaler(), MLPClassifier(alpha=1e2, random_state=42, hidden_layer_sizes=(32,)))
+            'lr':make_pipeline(StandardScaler(), LogisticRegression(C=1e-4, max_iter=150)), # toccare C
+            'rc':make_pipeline(StandardScaler(), RidgeClassifier(alpha=5e4)), #toccare alpha
+            'rf':make_pipeline(StandardScaler(), RandomForestClassifier(n_estimators=100, max_depth=5, min_samples_leaf=10)),
+            'svm': make_pipeline(StandardScaler(), SVC(probability=True, max_iter=200, C=2)),
+            'mlp': make_pipeline(StandardScaler(), MLPClassifier(alpha=4e1, random_state=42, hidden_layer_sizes=(32,)))
         }
         fit_models = {}
         for alg, pipeline in pipelines.items():
@@ -105,8 +105,8 @@ class Train:
 
     def print_confusion_matrix(self, alg, model, X_test, y_test):
         fig = plt.figure()
-        #xy = ['balc', 'bend', 'boxx', 'clap', 'marc', 'onew', 'wave'] # per APE
-        xy = ['dab', 'tp', 'rarmm', 'rarmt', 'larmm', 'larmt', 'st'] # per Custom
+        xy = ['balc', 'bend', 'boxx', 'clap', 'marc', 'onew', 'wave'] # per APE
+        #xy = ['dab', 'tp', 'rarmm', 'rarmt', 'larmm', 'larmt', 'st'] # per Custom
         y_predict = model.predict(X_test)
         c_matrix = skm.confusion_matrix(y_test, y_predict)
         disp = plot_confusion_matrix(model, X_test, y_test, display_labels=xy, cmap='plasma')
