@@ -14,7 +14,6 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 class RunKinect:
     
     def run(self, classificationModel: str):
-        
         """
         IMPORT MODEL
         Import model from binary dump
@@ -61,11 +60,17 @@ class RunKinect:
         g_ass = GestureAssistant(5, 60, 20, 0.8, True)
 
         while True:
-            # Get frame
+            """
+            GET FRAME
+            Get frame from IR camera
+            """
             ut_frame = user_tracker.read_frame()
             depth_frame = ut_frame.get_depth_frame()
 
-            # Image filtering
+            """
+            IMAGE FILTERING
+            Do image filtering on frames
+            """
             depth_frame_data = depth_frame.get_buffer_as_uint16()
             img = np.ndarray((depth_frame.height, depth_frame.width), dtype=np.uint16,
                          buffer=depth_frame_data).astype(np.float32)
@@ -76,6 +81,10 @@ class RunKinect:
                 img = (img - min_val) / (max_val - min_val)
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
+            """
+            SKELETON TRACKING
+            Start and do skeleton tracking (and get keypoints)
+            """
             if ut_frame.users:
                 for user in ut_frame.users:
                     if user.is_new():
@@ -87,7 +96,10 @@ class RunKinect:
                         row = pose_row
                         X = pd.DataFrame([row])
 
-                        # Do predictions
+                        """
+                        PREDICTIONS
+                        Do predictions
+                        """
                         if classificationModel == 'lr':
                             gesture_class, gesture_prob = self.__use_lr(model, X, img)
                         elif classificationModel == 'rc':
@@ -101,6 +113,10 @@ class RunKinect:
                         elif classificationModel == 'mlp':
                             gesture_class, gesture_prob = self.__use_cnn(model, X, img)
 
+                        """
+                        PRINT RESULTS ON SCREEN
+                        Just...this
+                        """
                         cv2.putText(img, 'CLASS', (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
                         cv2.putText(img, gesture_class.split(' ')[0], (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
                         cv2.putText(img, 'PROB', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
@@ -108,9 +124,7 @@ class RunKinect:
 
                         if g_ass.addToBufferAndCheck(gesture_class, gesture_prob[np.argmax(gesture_prob)]):
                             print("sending..")
-                        socket.send(bytes(gesture_class,'utf-8')) #(byte?)
-
-                        print(gesture_class, gesture_prob)
+                        socket.send(bytes(gesture_class,'utf-8'))
 
                         
             cv2.imshow("Depth", cv2.resize(img, (win_w, win_h)))
@@ -119,6 +133,10 @@ class RunKinect:
         k.close_camera()
         cv2.destroyAllWindows()
 
+    """
+    PREDICTION FUNCTIONS
+    One prediction function for every classification algorithm. Returns class and probability
+    """
     def __use_lr(self, model, X, img):
         gesture_class, gesture_prob = model.predict(X)[0], model.predict_proba(X)[0]
         return gesture_class, gesture_prob

@@ -5,8 +5,6 @@ __license__ = "GPLv3"
 
 import argparse
 from enum import Enum
-from operator import sub
-
 from model.mediapipe.acquire_data_webcam import AcquireData
 from model.mediapipe.acquire_data_dataset import AcquireDataset
 from model.mediapipe.run_mediapipe import Run

@@ -2,7 +2,6 @@ import signal
 import time
 import zmq
 
-
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 context = zmq.Context()
