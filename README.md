@@ -3,6 +3,8 @@
 Project for Vision and Cognitive Services course @ UniPD
 Master's Course in Computer Science, A.Y. 2020-2021.
 
+#### Checkout the video demonstration: https://youtu.be/Vgc_lnGi3rU
+
 ## Disclaimer
 
 This repo is distributed under GPLv3 license, and this means that you can use and modify the code as you prefer; nevertheless, we don't assume any kind of responsibility on the use you will do of it, you're responsible for yourself and yourself only.
