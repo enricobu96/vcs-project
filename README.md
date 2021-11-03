@@ -3,7 +3,17 @@
 Project for Vision and Cognitive Services course @ UniPD
 Master's Course in Computer Science, A.Y. 2020-2021.
 
-#### Checkout the video demonstration: https://youtu.be/Vgc_lnGi3rU
+
+#### Download
+
+- [Click here to download the paper](https://github.com/enricobu96/vcs-project/releases/download/v1.0.0/VCS-project_Buratto-Sciacco.pdf) (PDF, 0.76 MB)
+- [Click here to download the presentation](https://github.com/enricobu96/vcs-project/releases/download/v1.0.0/Slides-VCS.pdf) (PDF, 2.49 MB)
+
+#### Checkout the video demonstration
+
+[![vcs-thumbnail](https://user-images.githubusercontent.com/34033090/140212453-32303eb7-8904-42ea-8dac-e8c81c1914bb.png)](https://youtu.be/Vgc_lnGi3rU)
+
+- or click the link here: https://youtu.be/Vgc_lnGi3rU
 
 ## Disclaimer
 
